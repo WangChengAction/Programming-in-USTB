@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=nthk3byKLisO5mFslkpFuFMG"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/AreaRestriction/1.2/src/AreaRestriction_min.js"></script>
+    <link rel="stylesheet" type="text/css" href="ustb.css">
+    <title>北京科技大学新生地图</title>
+  </head> 
+
+  <body>
+    <header class="top">
+      <img id="headerLogo"
+           src="images/headerLogo.png" alt="USTB'S logo image">
+      <img id="headerSlogan"
+          src="images/headerSlogan.png" alt="Providing  the slogan from ustb">
+    </header>
+
+	<nav>
+	<ul>
+		<li class="selected"><a href="index.html">HOME</a></li>
+		<li><a href="http://www.ustb.edu.cn">USTB'S NEWS</a></li>
+		<li><a href="http://zhaosheng.ustb.edu.cn">UNDERGRADUATE STUDENT</a></li>
+		<li><a href="http://yzxc.ustb.edu.cn">GRADUATE STUDENT</a></li>
+		<li><a href="http://oice.ustb.edu.cn">FOREIGN STUDENT</a></li>
+	</ul>
+	</nav>
+
+	<div id="tableContainer">
+	<div id="tableRow">
+		<section id="main">
+      <div id="allmap"></div>
+    </section>
+
+    <aside>
+      <div id="r-result">请输入:<input type="text" id="suggestId" size="20" value="百度" style="width:150px;" /></div>
+    <div id="searchResultPanel" style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;">
+    </div>
+    <form>
+      <p>
+        <div class="checkbox">
+        <label for="area">图层控制：</label></br>
+        <input type="checkbox" id="area">新生入学地点</br>
+        <input type="checkbox" id="education">教学区</br>
+        <input type="checkbox" id="dormitory">宿舍区</br>
+        <input type="checkbox" id="logistic">后勤服务区</br>
+        <input type="checkbox" id="family">家属区</br>
+        <input type="checkbox" id="business">商业区</br>
+        <input type="checkbox" id="sports">运动场</br>
+      </div>
+      </p>
+      <p>
+        <label for="pathControl">路径规划:</label></br>
+        <input type="button" id="pathWay" value="路书"></br>
+        
+    
+      </p>
+      <p>
+        <input type="button" value="选择地图模式" id="model">     
+        <input type="button" onclick="add_rule();" value="比例尺">
+        <input type="button" value="地图复位" id="reset">
+
+      </p>
+      <p>
+        <label for="range">测距尺:</lebel>
+        从<input type="text" value="图书馆" id="range_start">
+        到<input type="text" value="操场" id="range_final">
+        <input type="button" value="查询" id="range_search">
+      </p>
+    </form>
+    </aside>
+	</div> <!-- tableRow -->
+	</div> <!-- tableContainer -->
+    <footer>
+      &copy;2015,USTB Maps
+      <br>
+      北京市海淀区学院路30号北京科技大学   
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+  //百度地图API功能 
+  var map = new BMap.Map("allmap",{minZoom:13,maxZoom:17});//创建Map实例，并设置地图允许的最大最小级别
+  map.centerAndZoom(new BMap.Point(116.366108,39.996118), 12);//初始化地图，用坐标设置地图中心
+  map.enableScrollWheelZoom();
+  var b = new BMap.Bounds(new BMap.Point(116.366108,39.996118),new BMap.Point(116.366108,39.996118));
+  try { 
+    BMapLib.AreaRestriction.setBounds(map, b);
+  } catch (e) {
+    alert(e);
+  }
+  var point = new BMap.Point(116.366108,39.996118);
+
+  
+  if(location.checked){
+    var geolocation = new BMap.Geolocation();
+    geolocation.getCurrentPosition(function(r){
+      if(this.getStatus() == BMAP_STATUS_SUCCESS){
+        var mk = new BMap.Marker(r.point);
+        map.addOverlay(mk);
+        map.panTo(r.point);
+        alert('您的位置：'+r.point.lng+','+r.point.lat);
+      }
+      else {
+        alert('failed'+this.getStatus());
+      }        
+    },{enableHighAccuracy: true})
+  }
+  var button_range = document.
+  ("range_search");
+  var button_area = document.getElementById("area");
+  var button_education = document.getElementById("education");
+  var button_dormitory = document.getElementById("dormitory");
+  var button_logistic = document.getElementById("logistic");
+  var button_family = document.getElementById("family");
+  var button_business = document.getElementById("business");
+  var button_path = document.getElementById("pathWay");
+  var button_sports = document.getElementById("sports");
+  var button_model = document.getElementById("model");
+  var button_reset = document.getElementById("reset");
+  button_area.onclick=areaDraw;
+  button_education.onclick=areaEducation;
+  button_dormitory.onclick=areaDormitory;
+  button_logistic.onclick=areaLogistic;
+  button_family.onclick=areaFamily;
+  button_business.onclick=areaBusiness;
+  button_sports.onclick=areaSports;
+  button_path.onclick=areaPath;
+  button_reset.onclick=delete_control;
+  button_model.onclick=add_control;
+  button_range.onclick = areaRange;
+  
+
+  //测距
+  function areaRange(){
+    var pointA = new BMap.Point(116.366000,39.996300);  // 创建点坐标A--图书馆
+    var pointB = new BMap.Point(116.363279,39.995805);  // 创建点坐标B--操场
+    var pointC = new BMap.Point(116.360267,39.995844);  // 创建点坐标C--西门
+    var pointD = new BMap.Point(116.371909,39.995264);  // 创建点坐标D--东门
+    var pointE = new BMap.Point(116.364363,39.999188);  // 创建点坐标E--北门
+    var pointF = new BMap.Point(116.364794,39.993108);  // 创建点坐标F--南门
+    var pointG = new BMap.Point(116.366447,39.994269);  // 创建点坐标G--新生报到处(活动中心)
+
+    if((range_start.value=="图书馆" && range_final.value=="操场")||(range_start.value=="操场" && range_final.value=="图书馆")){
+      alert('从图书馆到操场的距离是：'+(map.getDistance(pointA,pointB)).toFixed(2)+' 米。');  //获取两点距离,保留小数点后两位   
+    }else if((range_start.value="西门" && range_final.value=="东门")||(range_start.value=="东门" && range_final.value=="西门")){
+      alert('从西门到东门的距离是：'+(map.getDistance(pointC,pointD)).toFixed(2)+' 米。'); 
+    }else if((range_start.value="北门" && range_final.value=="南门")||(range_start.value=="南门" && range_final.value=="北门")){
+      alert('从北门到南门的距离是：'+(map.getDistance(pointE,pointF)).toFixed(2)+' 米。');  
+    }else if((range_start.value="西门" && range_final.value=="新生报到处")||(range_start.value=="新生报到处" && range_final.value=="西门")){
+      alert('从西门到新生报到处的距离是：'+(map.getDistance(pointC,pointG)).toFixed(2)+' 米。'); 
+    }else if((range_start.value="东门" && range_final.value=="新生报到处")||(range_start.value=="新生报到处" && range_final.value=="东门")){
+      alert('从东门到新生报到处的距离是：'+(map.getDistance(pointD,pointG)).toFixed(2)+' 米。');  
+    }else if((range_start.value="北门" && range_final.value=="新生报到处")||(range_start.value=="新生报到处" && range_final.value=="北门")){
+      alert('从北门到新生报到处的距离是：'+(map.getDistance(pointE,pointG)).toFixed(2)+' 米。');  
+    }else if((range_start.value="南门" && range_final.value=="新生报到处")||(range_start.value=="新生报到处" && range_final.value=="南门")){
+      alert('从南门到新生报到处的距离是：'+(map.getDistance(pointF,pointG)).toFixed(2)+' 米。');  
+    }else if((range_start.value="西门" && range_final.value=="图书馆")||(range_start.value=="图书馆" && range_final.value=="西门")){
+      alert('从西门到图书馆的距离是：'+(map.getDistance(pointC,pointA)).toFixed(2)+' 米。');   
+    }else if((range_start.value="西门" && range_final.value=="操场")||(range_start.value=="操场" && range_final.value=="西门")){
+      alert('从西门到操场的距离是：'+(map.getDistance(pointC,pointB)).toFixed(2)+' 米。');  
+    }else {
+      alert('功能待开发中');  //获取两点距离,保留小数点后两位 
+    }
+  }
+
+  var top_left_control = new BMap.ScaleControl({anchor: BMAP_ANCHOR_TOP_LEFT});// 左上角，添加比例尺
+  var top_left_navigation = new BMap.NavigationControl();  //左上角，添加默认缩放平移控件
+  var top_right_navigation = new BMap.NavigationControl({anchor: BMAP_ANCHOR_TOP_RIGHT, type: BMAP_NAVIGATION_CONTROL_SMALL}); //右上角，仅包含平移和缩放按钮
+  /*缩放控件type有四种类型:
+  BMAP_NAVIGATION_CONTROL_SMALL：仅包含平移和缩放按钮；BMAP_NAVIGATION_CONTROL_PAN:仅包含平移按钮；BMAP_NAVIGATION_CONTROL_ZOOM：仅包含缩放按钮*/
+  
+  //添加控件和比例尺
+  function add_rule(){
+    map.addControl(top_left_control);        
+    map.addControl(top_left_navigation);     
+    map.addControl(top_right_navigation);    
+  }
+  //移除控件和比例尺
+  function delete_control(){
+    map.removeControl(top_left_control);     
+    map.removeControl(top_left_navigation);  
+    map.removeControl(top_right_navigation);
+    map.removeControl(mapType1);   //移除2D图，卫星图
+    map.removeControl(mapType2);
+    map.removeControl(overView);
+    map.removeControl(overViewOpen);
+  }
+  //添加/删除地图类型和缩略图
+  var mapType1 = new BMap.MapTypeControl({mapTypes: [BMAP_NORMAL_MAP,BMAP_HYBRID_MAP]});
+  var mapType2 = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT});
+
+  var overView = new BMap.OverviewMapControl();
+  var overViewOpen = new BMap.OverviewMapControl({isOpen:true, anchor: BMAP_ANCHOR_BOTTOM_RIGHT});
+
+  //添加地图类型和缩略图
+  function add_control(){
+    map.addControl(mapType1);          //2D图，卫星图
+    map.addControl(mapType2);          //左上角，默认地图控件
+    map.setCurrentCity("北京");        //由于有3D图，需要设置城市哦
+    map.addControl(overView);          //添加默认缩略地图控件
+    map.addControl(overViewOpen);      //右下角，打开
+  }
+  //移除地图类型和缩略图
+  /*function delete_control(){
+    map.removeControl(mapType1);   //移除2D图，卫星图
+    map.removeControl(mapType2);
+    map.removeControl(overView);
+    map.removeControl(overViewOpen);
+  }*/
+  //创建点----新生入学地点
+  var marker = new BMap.Marker(new BMap.Point(116.366447,39.994269)); 
+  //创建点----教学区
+  var marker_2 =new BMap.Marker(new BMap.Point(116.361347,39.997904)); 
+  var marker_3 =new BMap.Marker(new BMap.Point(116.36229,39.997925)); 
+  var marker_4 =new BMap.Marker(new BMap.Point(116.364051,39.998643)); 
+  var marker_5 =new BMap.Marker(new BMap.Point(116.361158,39.997614)); 
+  var marker_6 =new BMap.Marker(new BMap.Point(116.361967,39.997261)); 
+  var marker_7 =new BMap.Marker(new BMap.Point(116.363889,39.996978)); 
+  var marker_8 =new BMap.Marker(new BMap.Point(116.363,39.99693)); 
+  var marker_9 =new BMap.Marker(new BMap.Point(116.362524,39.996156)); 
+  var marker_10 =new BMap.Marker(new BMap.Point(116.363862,39.99523)); 
+  var marker_11 =new BMap.Marker(new BMap.Point(116.363889,39.994428)); 
+  var marker_12 =new BMap.Marker(new BMap.Point(116.360709,39.997406)); 
+  var marker_13 =new BMap.Marker(new BMap.Point(116.36132,39.996791)); 
+  //创建点-----宿舍区
+  var marker_14=new BMap.Marker(new BMap.Point(116.366342,39.994884)); 
+  var marker_15 =new BMap.Marker(new BMap.Point(116.365228,39.99485)); 
+  var marker_16 =new BMap.Marker(new BMap.Point(116.365246,39.99391)); 
+  var marker_17 =new BMap.Marker(new BMap.Point(116.367554,39.99494)); 
+  var marker_18 =new BMap.Marker(new BMap.Point(116.366288,39.993392)); 
+  var marker_19 =new BMap.Marker(new BMap.Point(116.367483,39.993371)); 
+  var marker_20 =new BMap.Marker(new BMap.Point(116.368587,39.994111)); 
+  var marker_21 =new BMap.Marker(new BMap.Point(116.371031,39.994574)); 
+  var marker_22 =new BMap.Marker(new BMap.Point(116.366243,39.99391)); 
+  //后勤服务区
+  var marker_23 =new BMap.Marker(new BMap.Point(116.364186,39.994681)); 
+  var marker_24 =new BMap.Marker(new BMap.Point(116.363467,39.993852)); 
+  var marker_25 =new BMap.Marker(new BMap.Point(116.369989,39.993644)); 
+  var marker_26 =new BMap.Marker(new BMap.Point(116.368462,39.994874)); 
+  //家属区
+  var marker_27 =new BMap.Marker(new BMap.Point(116.365551,39.998937)); 
+  var marker_28 =new BMap.Marker(new BMap.Point(116.367276,39.998647)); 
+  var marker_29 =new BMap.Marker(new BMap.Point(116.366342,39.998356)); 
+  var marker_30 =new BMap.Marker(new BMap.Point(116.365066,39.997665)); 
+  var marker_31 =new BMap.Marker(new BMap.Point(116.366414,39.997444)); 
+  var marker_32 =new BMap.Marker(new BMap.Point(116.370061,39.997057)); 
+  var marker_33 =new BMap.Marker(new BMap.Point(116.370276,39.995399)); 
+  //商业区
+  var marker_34 =new BMap.Marker(new BMap.Point(116.366252,39.997292)); 
+  var marker_35 =new BMap.Marker(new BMap.Point(116.368552,39.997057)); 
+  var marker_36 =new BMap.Marker(new BMap.Point(116.366288,39.994833)); 
+  //运动场
+  var marker_37 =new BMap.Marker(new BMap.Point(116.366342,39.996145)); 
+  var marker_38 =new BMap.Marker(new BMap.Point(116.365048,39.996864)); 
+  var marker_39 =new BMap.Marker(new BMap.Point(116.36521,39.995275)); 
+  var marker_40 =new BMap.Marker(new BMap.Point(116.365138,39.996118)); 
+  var marker_41 =new BMap.Marker(new BMap.Point(116.368821,39.996132)); 
+   
+
+
+  //添加覆盖物
+  function areaDraw(){
+    if(area.checked){
+      map.addOverlay(marker);
+    }else{
+      remove_overlay();
+    }
+  }
+  function areaEducation(){
+    if(education.checked){
+      map.addOverlay(marker_2);
+      map.addOverlay(marker_3);
+      map.addOverlay(marker_4);
+      map.addOverlay(marker_5);
+      map.addOverlay(marker_6);
+      map.addOverlay(marker_7);
+      map.addOverlay(marker_8);
+      map.addOverlay(marker_9);
+      map.addOverlay(marker_10);
+      map.addOverlay(marker_11);
+      map.addOverlay(marker_12);
+      map.addOverlay(marker_13);
+    }else{
+      remove_overlay();
+    }
+  }
+  function areaDormitory(){
+    if(dormitory.checked){
+      map.addOverlay(marker_14);
+      map.addOverlay(marker_15);
+      map.addOverlay(marker_16);
+      map.addOverlay(marker_17);
+      map.addOverlay(marker_18);
+      map.addOverlay(marker_19);
+      map.addOverlay(marker_20);
+      map.addOverlay(marker_21);
+      map.addOverlay(marker_22);
+    }else{
+      remove_overlay();
+    }
+  }
+  function areaLogistic(){
+    if(logistic.checked){
+      map.addOverlay(marker_23);
+      map.addOverlay(marker_24);
+      map.addOverlay(marker_25);
+      map.addOverlay(marker_26);
+
+    }else{
+      remove_overlay();
+    }
+  }
+  function areaFamily(){
+    if(family.checked){
+      map.addOverlay(marker_27);
+      map.addOverlay(marker_28);
+      map.addOverlay(marker_29);
+      map.addOverlay(marker_30);
+      map.addOverlay(marker_31);
+      map.addOverlay(marker_32);
+      map.addOverlay(marker_33);
+      
+    }else{
+      remove_overlay();
+    }
+  }
+  function areaBusiness(){
+    if(business.checked){
+      map.addOverlay(marker_34);
+      map.addOverlay(marker_35);
+      map.addOverlay(marker_36);
+    }else{
+      remove_overlay();
+    }
+  }
+  function areaSports(){
+    if(sports.checked){
+      map.addOverlay(marker_37);
+      map.addOverlay(marker_38);
+      map.addOverlay(marker_39);
+      map.addOverlay(marker_40);
+      map.addOverlay(marker_41);
+    }else{
+      remove_overlay();
+    }
+  }
+  function add_overlay(){
+    map.addOverlay(marker);            //增加点
+    map.addOverlay(polyline);          //增加折线
+    map.addOverlay(circle);            //增加圆
+    map.addOverlay(polygon);           //增加多边形
+    map.addOverlay(rectangle);         //增加矩形
+  }
+  //清除覆盖物
+  function remove_overlay(){
+    map.clearOverlays();         
+  }
+
+  function G(id) {
+    return document.getElementById(id);
+  }
+
+  var ac = new BMap.Autocomplete(    //建立一个自动完成的对象
+    {"input" : "suggestId"
+    ,"location" : map
+  });
+
+  ac.addEventListener("onhighlight", function(e) {  //鼠标放在下拉列表上的事件
+  var str = "";
+    var _value = e.fromitem.value;
+    var value = "";
+    if (e.fromitem.index > -1) {
+      value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+    }    
+    str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
+    
+    value = "";
+    if (e.toitem.index > -1) {
+      _value = e.toitem.value;
+      value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+    }    
+    str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
+    G("searchResultPanel").innerHTML = str;
+  });
+
+  var myValue;
+  ac.addEventListener("onconfirm", function(e) {    //鼠标点击下拉列表后的事件
+  var _value = e.item.value;
+    myValue = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+    G("searchResultPanel").innerHTML ="onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue;
+    
+    setPlace();
+  });
+
+  function setPlace(){
+    map.clearOverlays();    //清除地图上所有覆盖物
+    function myFun(){
+      var pp = local.getResults().getPoi(0).point;    //获取第一个智能搜索的结果
+      map.centerAndZoom(pp, 17);
+      map.addOverlay(new BMap.Marker(pp));    //添加标注
+    }
+    var local = new BMap.LocalSearch(map, { //智能搜索
+      onSearchComplete: myFun
+    });
+    local.search(myValue);
+  }
+  /*单条路径的路径规划
+  var myP1 = new BMap.Point(116.327909,39.900259);    //起点
+  var myP2 = new BMap.Point(116.366447,39.994269);    //终点
+  var myIcon = new BMap.Icon("http://developer.baidu.com/map/jsdemo/img/Mario.png", new BMap.Size(32, 70), {    //小车图片
+    //offset: new BMap.Size(0, -5),    //相当于CSS精灵
+    imageOffset: new BMap.Size(0, 0)    //图片的偏移量。为了是图片底部中心对准坐标点。
+    });
+  var driving2 = new BMap.DrivingRoute(map, {renderOptions:{map: map, autoViewport: true}});    //驾车实例
+  driving2.search(myP1, myP2);    //显示一条公交线路
+
+  window.run = function (){
+    var driving = new BMap.DrivingRoute(map);    //驾车实例
+    driving.search(myP1, myP2);
+    driving.setSearchCompleteCallback(function(){
+      var pts = driving.getResults().getPlan(0).getRoute(0).getPath();    //通过驾车实例，获得一系列点的数组
+      var paths = pts.length;    //获得有几个点
+
+      var carMk = new BMap.Marker(pts[0],{icon:myIcon});
+      map.addOverlay(carMk);
+      i=0;
+      function resetMkPoint(i){
+        carMk.setPosition(pts[i]);
+        if(i < paths){
+          setTimeout(function(){
+            i++;
+            resetMkPoint(i);
+          },100);
+        }
+      }
+      setTimeout(function(){
+        resetMkPoint(5);
+      },100)
+
+    });
+  }
+
+  setTimeout(function(){
+    run();
+  },1500);*/
+  function areaPath(){
+    var bounds = null;
+    var linesPoints = null;
+    var spoi1 = new BMap.Point(116.363107,39.947825);    // 起点1
+    var spoi2 = new BMap.Point(116.328612,39.898688);    // 起点2
+    var spoi3 = new BMap.Point(116.387253,39.869898);    // 起点2
+    var spoi4 = new BMap.Point(116.436121,39.909315);    // 起点2
+
+    var epoi  = new BMap.Point(116.366447,39.994269);    // 终点
+    var myIcon = new BMap.Icon("http://developer.baidu.com/map/jsdemo/img/Mario.png", new BMap.Size(32, 70), {imageOffset: new BMap.Size(0, 0)});
+    function initLine(){
+      bounds = new Array();
+      linesPoints = new Array();
+      map.clearOverlays();                                                    // 清空覆盖物
+      var driving3 = new BMap.DrivingRoute(map,{onSearchComplete:drawLine});  // 驾车实例,并设置回调
+        driving3.search(spoi1, epoi);                                       // 搜索一条线路
+      var driving4 = new BMap.DrivingRoute(map,{onSearchComplete:drawLine});  // 驾车实例,并设置回调
+        driving4.search(spoi2, epoi);
+      var driving5 = new BMap.DrivingRoute(map,{onSearchComplete:drawLine});  // 驾车实例,并设置回调
+        driving5.search(spoi3, epoi);   
+      var driving6 = new BMap.DrivingRoute(map,{onSearchComplete:drawLine});  // 驾车实例,并设置回调
+        driving6.search(spoi4, epoi);                                          // 搜索一条线路
+    }
+    function run(){
+      for(var m = 0;m < linesPoints.length; m++){
+        var pts = linesPoints[m];
+        var len = pts.length;
+        var carMk = new BMap.Marker(pts[0],{icon:myIcon});
+        map.addOverlay(carMk);
+        resetMkPoint(1,len,pts,carMk)
+      }
+      
+      function resetMkPoint(i,len,pts,carMk){
+        carMk.setPosition(pts[i]);
+        if(i < len){
+          setTimeout(function(){
+            i++;
+            resetMkPoint(i,len,pts,carMk);
+          },100);
+        }
+      }
+      
+    }
+    function drawLine(results){
+      var opacity = 0.45;
+      var planObj = results.getPlan(0);
+      var b = new Array();
+      var addMarkerFun = function(point,imgType,index,title){
+        var url;
+        var width;
+        var height
+        var myIcon;
+        // imgType:1的场合，为起点和终点的图；2的场合为车的图形
+        if(imgType == 1){
+          url = "http://developer.baidu.com/map/jsdemo/img/dest_markers.png";
+          width = 42;
+          height = 34;
+          myIcon = new BMap.Icon(url,new BMap.Size(width, height),{offset: new BMap.Size(14, 32),imageOffset: new BMap.Size(0, 0 - index * height)});
+        }else{
+          url = "http://developer.baidu.com/map/jsdemo/img/trans_icons.png";
+          width = 22;
+          height = 25;
+          var d = 25;
+          var cha = 0;
+          var jia = 0
+          if(index == 2){
+            d = 21;
+            cha = 5;
+            jia = 1;
+          }
+          myIcon = new BMap.Icon(url,new BMap.Size(width, d),{offset: new BMap.Size(10, (11 + jia)),imageOffset: new BMap.Size(0, 0 - index * height - cha)});
+        }
+        
+        var marker = new BMap.Marker(point, {icon: myIcon});
+        if(title != null && title != ""){
+          marker.setTitle(title);
+        }
+        // 起点和终点放在最上面
+        if(imgType == 1){
+          marker.setTop(true);
+        }
+        map.addOverlay(marker);
+      }
+      var addPoints = function(points){
+        for(var i = 0; i < points.length; i++){
+          bounds.push(points[i]);
+          b.push(points[i]);
+        }
+      } 
+      // 绘制驾车步行线路
+      for (var i = 0; i < planObj.getNumRoutes(); i ++){
+        var route = planObj.getRoute(i);
+        if (route.getDistance(false) <= 0){continue;}
+        addPoints(route.getPath());
+        // 驾车线路
+        if(route.getRouteType() == BMAP_ROUTE_TYPE_DRIVING){
+          map.addOverlay(new BMap.Polyline(route.getPath(), {strokeColor: "#0030ff",strokeOpacity:opacity,strokeWeight:6,enableMassClear:true}));
+        }else{
+        // 步行线路有可能为0
+          map.addOverlay(new BMap.Polyline(route.getPath(), {strokeColor: "#30a208",strokeOpacity:0.75,strokeWeight:4,enableMassClear:true}));
+        }
+      } 
+      map.setViewport(bounds);  
+      // 终点
+      addMarkerFun(results.getEnd().point,1,1);
+      // 开始点
+      addMarkerFun(results.getStart().point,1,0);
+      linesPoints[linesPoints.length] = b;
+    }
+    initLine();
+    setTimeout(function(){
+      run();
+    },1500);
+  }
+</script>
+
+
+

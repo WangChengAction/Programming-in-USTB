@@ -1,0 +1,38 @@
+body{
+	font-family:		Georgia,"Times New Roman",Times,serif;
+	font-size:			small;
+	margin:				0px;
+}
+#header{
+	margin:				10px 10px 0px 10px;
+	height:				108px;
+}
+
+#tableContainer{
+	display:			table;
+	border-spacing:		10px;
+}
+#tableRow{
+	display:			table-row;
+}
+#main{
+
+	display:			table-cell;
+	font-size:			105%;
+	padding:			15px;
+	vertical-align:		top;
+	width:				1700px;
+	
+}
+#sidebar{
+	display:			table-cell;
+	font-size:			105%;
+	padding:			15px;
+	vertical-align: 	top;
+	width:				200px;
+}
+#footer{
+	text-align:			center;
+	padding:			15px;
+	font-size:			small;
+}

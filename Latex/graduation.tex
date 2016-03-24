@@ -1,0 +1,185 @@
+\documentclass[UTF8]{ctexart}
+
+\usepackage{setspace}
+\usepackage{cite}
+\usepackage{fancyhdr}%页眉页脚
+\usepackage{titletoc}
+
+\title{英语论文题目}
+\date{}
+
+%----------------------标题左对齐-----------------------
+\makeatletter
+\renewcommand\section{\@startsection{section}{1}{\z@}
+{-3.5ex \@plus -1ex \@minus -.2ex}
+{2.3ex \@plus.2ex}
+{\normalfont\LARGE\CJKfamily{Helvetica}}}
+\makeatother
+
+
+%---------------------- 页眉页脚-----------------------
+\pagestyle{fancy}
+\lhead{}
+\chead{北京科技大学本科生毕业设计（论文）}
+\rhead{}
+\cfoot{\thepage}
+
+
+%----------------------目录加虚线------------------------
+\titlecontents{section}[0pt]{\addvspace{2pt}\filright}
+{\contentspush{\thecontentslabel\ }}
+{}{\titlerule*[8pt]{.}\contentspage}
+
+
+%---------------------- 摘要 -----------------------------
+\newcommand{\cnabstractname}{摘要}
+\newcommand{\enabstractname}{Abstract}
+
+\newenvironment{cnabstract}{%
+  \par\small
+  \noindent\mbox{}\hfill{\bfseries \LARGE \cnabstractname}\hfill\mbox{}\par
+  \vskip 2.5ex}{\par\vskip 2.5ex}
+\newenvironment{enabstract}{%
+  \par\small
+  \noindent\mbox{}\hfill{\bfseries \LARGE \enabstractname}\hfill\mbox{}\par
+  \vskip 2.5ex}{\par\vskip 2.5ex}
+
+%--------------------- 参考文献 ----------------------------
+\bibliographystyle{unsrt}
+\renewcommand\refname{\vspace*{-2em}}
+
+
+\begin{document}
+\pagenumbering{arabic}
+\begin{cnabstract}
+  字数约为500～600字，一般不超过800字。\par
+论文摘要是论文内容不加注释和评论的简短陈述。摘要的编写应遵循以下原则：
+（1）摘要应具有独立性和自含性，即不阅读论文的全文，就能获得必要的信息。摘要是学位论文的缩影，是学位论文的主要内容、见解、结论简短明了的缩写。
+（2）摘要中要有数据、有结论，是一片完整的短文，可以独立使用，也可以引用。
+（3）摘要内容应尽可能包括原论文的主要信息，供读者确定有无必要阅读全文，也供文摘汇编等二次文献采用。
+（4）摘要一般应说明研究工作的目的、意义、研究方法、研究结果、主要结论及意义、创造性成果和新见解，而重点是研究结果和结论。
+（5）要用文字表达，不要附图和照片，除了实在无变通办法可用以外，摘要中不用图、表、化学结构式、非公知公用的符号和术语，不要使用表格、公式、上下标以及其他特殊符号，要突出重点，阐述清楚，少用数据表。\par
+论文摘要的内容应包括：研究工作的目的和意义。表达力求简洁、准确。\\
+  \\\\
+  \textbf{关键字:} 自定义中文关键词3 - 5个
+\end{cnabstract}
+\addcontentsline{toc}{section}{摘要}
+\newpage
+\maketitle
+\begin{enabstract}
+  内容应当与中文摘要相同
+  \\\\
+
+  \textbf{Keywords：} 英文关键词3 - 5个，内容应于中文关键词相同
+\end{enabstract}
+\addcontentsline{toc}{section}{Abstract}
+
+\newpage
+\pagenumbering{arabic}
+\begin{spacing}{1.6}
+\tableofcontents
+\end{spacing}
+\newpage
+\pagenumbering{arabic}
+
+\part*{插图或附表清单}
+（此页并非必要，不需要时请删除此页）\par
+论文中如果图表较多，可以有此页。图的清单应有序号、图题和页码。表达清单应有序号、表题和页码。\par
+此页并非必要。
+\addcontentsline{toc}{section}{插图或附表清单}
+\newpage
+\part*{注释说明清单}
+（此页并非必要，不需要时请删除此页。主要是符号、标志、缩略语、首字母缩写、单位、术语、名词等方面的注释清单。）
+\addcontentsline{toc}{section}{注释说明清单}
+\newpage
+\part*{引言}
+此处写入引言\\\\ \par
+引言简要说明研究工作的目的、范围、相关领域的前人工作和知识空白、理论基础和分析、研究设想、研究方法和实验设计、预期结果和意义等。引言言简意赅。不要与摘要雷同，不要成为摘要的注释。一般教科书中有的知识，引言中不要赘述。\par
+本科生毕业论文需要反映出作者确实已经掌握了坚实的基础理论和一定深度的专业知识，具有开阔的科学视野，对研究方案做了充分论证，因此，有关历史回顾和前任工作的文献综合评论，以及理论分析等，可以在正文中单独成章，用足够的文字叙述。\par
+不用此信息时，删除即可。
+\addcontentsline{toc}{section}{引言}
+\newpage
+
+\begin{spacing}{3}
+
+\section{[1级标题]}
+\subsection{[2级标题]}
+\subsubsection{[3级标题]}
+\subsection{[2级标题]}
+\subsubsection{[3级标题]}
+
+\newpage
+
+\section{[1级标题]}
+\subsection{[2级标题]}
+\subsubsection{[3级标题]}
+
+\newpage
+
+\section{[1级标题]}
+\subsection{[2级标题]}
+\subsubsection{[3级标题]}
+
+\newpage
+
+\section{[1级标题]}
+\subsection{[2级标题]}
+\subsubsection{[3级标题]}
+
+\end{spacing}
+
+\newpage
+
+\part*{结论}
+\par
+论文应有结论。论文的结论是最终的，总体的结论，不是正文中各章小结的简单重复。结论应该观点明确、严谨、完整、准确、精炼。文字必须简明扼要。如果不可能导出应有的结论，也可以没有结论而进行必要的讨论。\par
+可以在结论或讨论中提出建议、研究设想、仪器设备改进意见、尚待解决的问题等。不要简单重复、罗列实验结果，要认真阐明本人在结业工作中创造性的成果和新见解，在本领域中的地位和作用，新见解的意义。对对存在的问题和不足应做出客观的叙述。应严格区分自己的成果与他人（特别是导师）科研成果的界限。\par
+\addcontentsline{toc}{section}{结论}
+\newpage
+
+\part*{参考文献}
+\par
+\bibliography{graduation}
+\cite{1}
+\cite{2}
+
+\par
+参考文献部分在论文中具有重要作用，表明该论文参考了某些有关资料，从而作为评价改论文的依据之一。\par
+参考文献只列出作者查阅后，主要的和公开发表过的资料。参考文献必须引用原始文献，引用人必须阅读过该文，按正文中引用文献标注顺序，依次列出。原则上要求用文献本身的文字列出。\par
+上面给出了参考文献的基本样式。\par
+\addcontentsline{toc}{section}{参考文献}
+\newpage
+\part*{附录}
+\par
+附录是作为论文主体的补充项目，并不是必需的。。。。\par
+\addcontentsline{toc}{section}{附录}
+\newpage
+\part*{在学取得成果}
+\begin{spacing}{2}
+一、在学期间所获的奖励 
+\par 
+（应注明奖励名称、授奖机构、授奖时间等。）
+\par
+二、在学期间发表的论文 
+\par
+（应按照参考文献的格式来填写。）
+\par
+三、在学期间取得的科技成果 
+\par
+（应注明课题名称、参加身份、通过时间、通过方。）
+\end{spacing}
+\addcontentsline{toc}{section}{在学取得成果}
+\newpage
+\part*{致谢}
+
+可以在正文后对以下方面致谢：\par
+（1）国家科学基金、资助研究工作的奖学金基金、合同单位、研究项目资助或支持的企业、组织或个人；\par
+（2）协助完成研究工作和提供便利条件的组织或个人；\par
+（3）在研究工作中提出建议和提供帮助的人；\par
+（4）给予转载和引用权的资料、图片、文献、研究思想和设想的所有者；\par
+（5）其他应感谢的组织或个人.\par
+致谢辞应谦虚诚恳，实事求是. 主要感谢导师和对论文工作有直接贡献及帮助的人士和单位. 学位申请人的家属及亲朋好友等与论文无直接关系的人员，一般不列入致谢的范围.
+
+\addcontentsline{toc}{section}{致谢}
+
+\end{document}

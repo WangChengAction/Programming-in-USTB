@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+<head>
+	<title>北京科技大学新生地图</title>
+	<meta charset="utf-8">
+	<style>
+		canvas { border: 1px solid black;}
+		#map{
+			list-style-image: hide;
+		}
+	</style>
+	<script src="map-1.js"></script>
+</head>
+<body>
+	<img id="map" src="USTB.jpg" width="100" height="700" align="middle" style="display:none">
+	<img id="map-1" src="USTB-1.jpg" width="100" height="700" align="middle" style="display:none">
+	<img id="map-2" src="USTB-2.jpg" width="100" height="700" align="middle" style="display:none">
+	<img id="map-3" src="USTB-3.jpg" width="100" height="700" align="middle" style="display:none">
+	<img id="map-4" src="USTB-4.jpg" width="100" height="700" align="middle" style="display:none">
+	<img id="map-5" src="USTB-5.jpg" width="100" height="700" align="middle" style="display:none">
+	<img id="map-6" src="USTB-6.jpg" width="100" height="700" align="middle" style="display:none">
+	<img id="map-7" src="USTB-7.jpg" width="100" height="700" align="middle" style="display:none">
+
+
+	<div class="container">
+		<canvas id="mapCanvas" width="1000" height="500"></canvas>
+	</div>
+	<form>
+		<p>
+			<label for="layerControl">图层控制：</label></br>
+			<input type="checkbox" id="area">新生入学地点</br>
+			<input type="checkbox" id="education">教学区</br>
+			<input type="checkbox" id="dormitory">宿舍区</br>
+			<input type="checkbox" id="logistic">后勤服务区</br>
+			<input type="checkbox" id="family">家属区</br>
+			<input type="checkbox" id="business">商业区</br>
+			<input type="checkbox" id="sports">运动场</br>
+		</p>
+		<p>
+			<label for="pathControl">路径规划:</label></br>
+			<input type="checkbox" id="pathWest">新生报到路径(西门)</br>
+			<input type="checkbox" id="pathEast">新生报到路径（东门）</br>
+			<input type="checkbox" id="pathNorth">新生报到路径（北门）</br>
+			<input type="checkbox" id="pathSouth">新生报到路径（南门）</br>
+		
+		</p>
+		<p>
+			<input type="button" value="放大" id="large">
+			<input type="button" value="缩小" id="small">
+			<input type="button" value="漫游" id="roam">
+			<input type="button" value="拉框放大" id="toBig">
+			<input type="button" value="测距" id="range">
+			<input type="button" value="地图复位" id="reset">
+		</p>
+		<p>
+			<label for="location">请输入地名：</lebel>
+			<input type="text" value="图书馆" id="location">
+			<input type="button" value="查询" id="search">
+
+		</p>	
+	</form>
+
+</body>
+</html>
